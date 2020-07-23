@@ -1,25 +1,29 @@
-package Dynamo;
-import java.util.*;
+package Dynamo.dao;
 
 import Dynamo.model.Movies;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.*;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
+import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.*;
+import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
+import java.util.*;
 
-public class MoviesDao {
+@Repository
+public class MoviesDaoImpl implements MoviesDao {
 
 
-    static  AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+    static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
             .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
             .build();
 
     static DynamoDB dynamoDB = new DynamoDB(client);
-    GetItemResult result;
+
     ListTablesResult res = null;
     Table createdTable;
     List<Movies> movies = new ArrayList<Movies>();
@@ -27,15 +31,8 @@ public class MoviesDao {
     List<Movies> moviesFilteredById = new ArrayList<Movies>();
 
 
-
-
-
-
-
-
-
-    // get table information
-    public void getTableInformation(String Name ) {
+    @Override
+    public void getTableInformation(String Name) {
 
         System.out.println("Describing " + Name);
 
@@ -46,10 +43,12 @@ public class MoviesDao {
                 tableDescription.getTableName(), tableDescription.getTableStatus(),
                 tableDescription.getProvisionedThroughput().getReadCapacityUnits(),
                 tableDescription.getProvisionedThroughput().getWriteCapacityUnits());
-        System.out.println("hey "+   tableDescription.getItemCount());
+        System.out.println("hey " + tableDescription.getItemCount());
     }
     // creation of tables
-    public Table createtable(String Name ){
+
+    @Override
+    public Table createtable(String Name) {
 
         /* Create an Object of CreateTableRequest */
         CreateTableRequest request = new CreateTableRequest();
@@ -67,7 +66,7 @@ public class MoviesDao {
         /* Create & Set a list of KeySchemaElement */
         List<KeySchemaElement> keySchema = Arrays.asList(
                 new KeySchemaElement("ID_Movie", KeyType.HASH),
-        new KeySchemaElement("Title", KeyType.RANGE));
+                new KeySchemaElement("Title", KeyType.RANGE));
 
 
         request.setKeySchema(keySchema);
@@ -84,12 +83,11 @@ public class MoviesDao {
             /* Creating and Sending request using Fluent API - USER Table */
             Table resultFluent = dynamoDB.createTable((new CreateTableRequest())
                     .withTableName(Name)
-                    .withAttributeDefinitions(new AttributeDefinition("ID_Movie", ScalarAttributeType.S),new AttributeDefinition("Title", ScalarAttributeType.S))
-                    .withKeySchema(new KeySchemaElement("ID_Movie", KeyType.HASH),new KeySchemaElement("Title", KeyType.RANGE))
+                    .withAttributeDefinitions(new AttributeDefinition("ID_Movie", ScalarAttributeType.S), new AttributeDefinition("Title", ScalarAttributeType.S))
+                    .withKeySchema(new KeySchemaElement("ID_Movie", KeyType.HASH), new KeySchemaElement("Title", KeyType.RANGE))
 
                     .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
-            System.out.println("hey"+resultFluent);
-
+            System.out.println("hey" + resultFluent);
 
 
         } catch (AmazonServiceException e) {
@@ -99,98 +97,93 @@ public class MoviesDao {
         }
         return createdTable;
     }
+    // get all tables
 
+    @Override
+    public ListTablesResult getTables() {
+        try {
 
+            /* Creating ListTableRequest with limit 50 */
+            ListTablesRequest request = new ListTablesRequest();
+            request.withLimit(50);
 
+            String lastTable = null;
 
-              // get all tables
-              public ListTablesResult getTables(){
-                try {
+            while (true) {
 
-                    /* Creating ListTableRequest with limit 50 */
-                    ListTablesRequest request = new ListTablesRequest();
-                    request.withLimit(50);
-
-                    String lastTable = null;
-
-                    while(true) {
-
-                        if(lastTable == null) {
-                            /* Send First List Table Request */
-                            res = client.listTables(request);
-                        }else {
-                            /* Send Subsequent List Table Request */
-                            res = client.listTables(request.withExclusiveStartTableName(lastTable));
-                        }
-
-                        res.getTableNames().forEach(e -> {
-                                    System.out.println(e);
-
-                                }
-                                                                        );
-
-                        /* Getting name of last evaluated table */
-                        lastTable = res.getLastEvaluatedTableName();
-                        if(lastTable == null) {
-                            break;
-                        }
-
-                    }
-
-                } catch (AmazonServiceException e) {
-
-                    System.out.println(e.getErrorMessage());
-
+                if (lastTable == null) {
+                    /* Send First List Table Request */
+                    res = client.listTables(request);
+                } else {
+                    /* Send Subsequent List Table Request */
+                    res = client.listTables(request.withExclusiveStartTableName(lastTable));
                 }
-                return  res;
+
+                res.getTableNames().forEach(e -> {
+                            System.out.println(e);
+
+                        }
+                );
+
+                /* Getting name of last evaluated table */
+                lastTable = res.getLastEvaluatedTableName();
+                if (lastTable == null) {
+                    break;
+                }
 
             }
 
-            // delete the table from the database
-             public void deleteTable(String Name){
-                DeleteTableRequest request = new DeleteTableRequest();
+        } catch (AmazonServiceException e) {
 
-                /* Setting Table Name */
-                request.setTableName(Name);
+            System.out.println(e.getErrorMessage());
 
-                try {
-                    /* Send Delete Table Request */
-                    DeleteTableResult result = client.deleteTable(request);
+        }
+        return res;
 
-                    System.out.println("Status : " +  result.getSdkHttpMetadata().getHttpStatusCode());
+    }
+    // delete the table from the database
 
-                    System.out.println("Table Name : " +  result.getTableDescription().getTableName());
+    @Override
+    public void deleteTable(String Name) {
+        DeleteTableRequest request = new DeleteTableRequest();
 
-                    /* Creating and Sending request with Table Name only */
-                    result = client.deleteTable(Name);
+        /* Setting Table Name */
+        request.setTableName(Name);
 
-                    System.out.println("Status : " +  result.getSdkHttpMetadata().getHttpStatusCode());
+        try {
+            /* Send Delete Table Request */
+            DeleteTableResult result = client.deleteTable(request);
 
-                    System.out.println("Table Name : " +  result.getTableDescription().getTableName());
+            System.out.println("Status : " + result.getSdkHttpMetadata().getHttpStatusCode());
 
-                } catch (AmazonServiceException e) {
+            System.out.println("Table Name : " + result.getTableDescription().getTableName());
 
-                    System.out.println(e.getErrorMessage());
+            /* Creating and Sending request with Table Name only */
+            result = client.deleteTable(Name);
 
-                }
-            }
-            // retrieve items from the table
+            System.out.println("Status : " + result.getSdkHttpMetadata().getHttpStatusCode());
 
+            System.out.println("Table Name : " + result.getTableDescription().getTableName());
 
+        } catch (AmazonServiceException e) {
 
+            System.out.println(e.getErrorMessage());
 
+        }
+    }
+    // retrieve items from the table
 
-
-    public List<Movies> filterTableWithCategory(String Name , String filter){
-                Table table = dynamoDB.getTable(Name);
+    @Override
+    public List<Movies> filterTableWithCategory(String Name, String filter) {
+        Table table = dynamoDB.getTable(Name);
         Map<String, AttributeValue> expressionAttributeValues =
                 new HashMap<String, AttributeValue>();
         expressionAttributeValues.put(":category", new AttributeValue(filter));
 
         ScanRequest items = new ScanRequest().withTableName(Name)
-                        .withFilterExpression("Category = :category")
-                        .withProjectionExpression("ID_Movie, Title , Category ,  origin")
-                        .withExpressionAttributeValues(expressionAttributeValues);
+                .withFilterExpression("Category = :category")
+                .withProjectionExpression("ID_Movie, Title , Category ,  origin")
+                .withExpressionAttributeValues(expressionAttributeValues);
 
 
         ScanResult result = client.scan(items);
@@ -205,29 +198,29 @@ public class MoviesDao {
             moviesFiltered.add(movie);
             System.out.println(item);
         }
-                return moviesFiltered;
+        return moviesFiltered;
 
-}
-
-
-
-            public List<Movies> getAllItems(String Name){
-                ScanRequest scanRequest = new ScanRequest()
-                        .withTableName(Name);
-                ScanResult result = client.scan(scanRequest);
+    }
 
 
-
-                for (Map<String, AttributeValue> item : result.getItems()){
-                    Movies movie = new Movies(item.get("ID_Movie").getS(),item.get("Title").getS(),item.get("Category").getS(),item.get("year").getS(),item.get("origin").getS());
-                    movies.add(movie);
-                    System.out.println(item.get("ID_Movie").getS());
-                }
-                return movies;
-            }
+    @Override
+    public List<Movies> getAllItems(String Name) {
+        ScanRequest scanRequest = new ScanRequest()
+                .withTableName(Name);
+        ScanResult result = client.scan(scanRequest);
 
 
-    public List<Movies> filterTableWithID(String Name , String filter){
+        for (Map<String, AttributeValue> item : result.getItems()) {
+            Movies movie = new Movies(item.get("ID_Movie").getS(), item.get("Title").getS(), item.get("Category").getS(), item.get("year").getS(), item.get("origin").getS());
+            movies.add(movie);
+            System.out.println(item.get("ID_Movie").getS());
+        }
+        return movies;
+    }
+
+
+    @Override
+    public List<Movies> filterTableWithID(String Name, String filter) {
 
         Map<String, AttributeValue> expressionAttributeValue =
                 new HashMap<String, AttributeValue>();
@@ -255,6 +248,7 @@ public class MoviesDao {
 
     }
 
+    @Override
     public void putItem(String Name, Movies movie) {
         Table table = dynamoDB.getTable(Name);
         try {
@@ -275,6 +269,7 @@ public class MoviesDao {
 
     }
 
+    @Override
     public void updateItem(String name, Movies movie) {
 
         /* Create an Object of UpdateItemRequest */
@@ -297,9 +292,9 @@ public class MoviesDao {
 
         /* Create a Map of attributes to be updated */
         Map<String, AttributeValueUpdate> map = new HashMap<>();
-        map.put("Category", new AttributeValueUpdate(new AttributeValue(movie.getCategory()),"PUT"));
-        map.put("origin", new AttributeValueUpdate(new AttributeValue(movie.getOrigin()),"PUT"));
-        map.put("year", new AttributeValueUpdate(new AttributeValue(movie.getYear()),"PUT"));
+        map.put("Category", new AttributeValueUpdate(new AttributeValue(movie.getCategory()), "PUT"));
+        map.put("origin", new AttributeValueUpdate(new AttributeValue(movie.getOrigin()), "PUT"));
+        map.put("year", new AttributeValueUpdate(new AttributeValue(movie.getYear()), "PUT"));
 
         request.setAttributeUpdates(map);
 
@@ -324,9 +319,9 @@ public class MoviesDao {
         }
 
 
-
     }
 
+    @Override
     public void deleteItem(String Name, String ID) {
         /* Create an Object of DeleteItemRequest */
         DeleteItemRequest request = new DeleteItemRequest();
@@ -364,20 +359,8 @@ public class MoviesDao {
             System.out.println(e.getErrorMessage());
 
         }
-    }}
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
+}
 
 
 
