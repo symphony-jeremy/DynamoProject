@@ -29,7 +29,7 @@ public class MoviesDaoTest extends DynamoApplicationTests {
 
     @Before
     public void setUp() {
-        moviesDao.createtable("Movies");
+        moviesDao.createTable("Movies");
 
 
     }
@@ -39,7 +39,6 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
         assertEquals("ACTIVE", tableDescription.getTableStatus());
 
-
     }
 
     @Test
@@ -47,16 +46,16 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
         assertEquals("ACTIVE", tableDescription.getTableStatus());
         Movies movie = new Movies("1", "Forte", "Comédie", "2020", "France");
-        moviesDao.putItem("Movies", movie);
+        moviesDao.putMovie("Movies", movie);
         Movies movie1 = new Movies("2", "Limitless", "Action", "2011", "US");
-        moviesDao.putItem("Movies", movie1);
+        moviesDao.putMovie("Movies", movie1);
         assertEquals(2, tableDescription.getItemCount().intValue());
 
     }
 
     @Test
     void filterItemTest() {
-        List<Movies> items = moviesDao.filterTableWithCategory("Movies", "Action");
+        List<Movies> items = moviesDao.findMovieByCategory("Movies", "Action");
         System.out.println("hey" + items);
         assertEquals(1, items.size());
 
@@ -64,14 +63,14 @@ public class MoviesDaoTest extends DynamoApplicationTests {
 
     @Test
     void filterItemwithIdTest() {
-        List<Movies> items = moviesDao.filterTableWithID("Movies", "2");
+        List<Movies> items = moviesDao.findMovieById("Movies", "2");
         assertEquals("Action", items.get(0).getCategory());
 
     }
 
     @Test
     void deleteItemTest() {
-        moviesDao.deleteItem("Movies", "2");
+        moviesDao.deleteMovie("Movies", "2");
         TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
 
         assertEquals(1, tableDescription.getItemCount().intValue());
@@ -81,7 +80,7 @@ public class MoviesDaoTest extends DynamoApplicationTests {
 
     @Test
     void getallitemsTest() {
-        moviesDao.getAllItems("Movies");
+        moviesDao.findAll("Movies");
     }
 
 
