@@ -17,28 +17,28 @@ public class DynamoController {
 
 
     @GetMapping("/getAlltables")
-    public List<String> table() {
+    public List<String> getTables() {
 
         return tab.getTables().getTableNames();
     }
 
     @PostMapping("/addItem/{Name}")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addItem(@PathVariable("Name") String name, @RequestBody Movies movie) {
+    public void addMovie(@PathVariable("Name") String name, @RequestBody Movies movie) {
 
 
-        tab.putItem(name, movie);
+        tab.putMovie(name, movie);
     }
 
     @GetMapping("/Tables/{name}")
-    public List<Movies> getAllItems(@PathVariable("name") String name) {
-        return tab.getAllItems(name);
+    public List<Movies> findAll(@PathVariable("name") String name) {
+        return tab.findAll(name);
     }
 
     @PostMapping("/Tables/addTable")
     @ResponseStatus(HttpStatus.CREATED)
     public Table createTable(@RequestBody String Name) {
-        return tab.createtable(Name);
+        return tab.createTable(Name);
 
     }
 
@@ -51,14 +51,14 @@ public class DynamoController {
     @GetMapping("/Tables/{name}/{id}")
     public List<Movies> findMovieById(@PathVariable("name") String name, @PathVariable("id") String ID) {
 
-        return tab.filterTableWithID(name, ID);
+        return tab.findMovieById(name, ID);
 
     }
 
     @GetMapping("/filter/{name}/{filter}")
-    public List<Movies> filterwithCategory(@PathVariable("name") String name, @PathVariable("filter") String filter) {
+    public List<Movies> findMovieByCategory(@PathVariable("name") String name, @PathVariable("filter") String filter) {
 
-        return tab.filterTableWithCategory(name, filter);
+        return tab.findMovieByCategory(name, filter);
 
     }
 
@@ -66,14 +66,14 @@ public class DynamoController {
     @PutMapping("/update/{name}")
     public void updateMovie(@PathVariable("name") String name, @RequestBody Movies movie) {
 
-        tab.updateItem(name, movie);
+        tab.updateMovie(name, movie);
 
 
     }
 
     @DeleteMapping("/delete/{name}/{id}")
-    public String deleteItem(@PathVariable String name, @PathVariable String id) {
-        tab.deleteItem(name, id);
+    public String deleteMovie(@PathVariable String name, @PathVariable String id) {
+        tab.deleteMovie(name, id);
         return " item deleted";
     }
 
