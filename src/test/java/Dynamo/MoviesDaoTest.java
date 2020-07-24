@@ -5,16 +5,15 @@ import Dynamo.model.Movies;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.*;
-import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import org.junit.Before;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 
 public class MoviesDaoTest extends DynamoApplicationTests {
@@ -33,17 +32,17 @@ public class MoviesDaoTest extends DynamoApplicationTests {
     public void setUp() {
         // recreate the table before each tests
         moviesDao.deleteTable("Movies");
-        moviesDao.createtable("Movies");
+        moviesDao.createTable("Movies");
         // insert 2 movies
         Movies movie = new Movies("1", "Forte", "Comédie", "2020", "France");
-        moviesDao.putItem("Movies", movie);
+        moviesDao.putMovie("Movies", movie);
         Movies movie1 = new Movies("2", "Limitless", "Action", "2011", "US");
-        moviesDao.putItem("Movies", movie1);
+        moviesDao.putMovie("Movies", movie1);
     }
 
     @Test
     void getAllItemsTest() {
-        List<Movies> movies = moviesDao.getAllItems("Movies");
+        List<Movies> movies = moviesDao.findAll("Movies");
         assertNotNull(movies);
         assertEquals(2, movies.size());
     }

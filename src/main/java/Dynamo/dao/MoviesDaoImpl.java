@@ -45,10 +45,9 @@ public class MoviesDaoImpl implements MoviesDao {
                 tableDescription.getProvisionedThroughput().getWriteCapacityUnits());
         System.out.println("hey " + tableDescription.getItemCount());
     }
-    // creation of tables
 
     @Override
-    public Table createtable(String Name) {
+    public Table createTable(String Name) {
 
         /* Create an Object of CreateTableRequest */
         CreateTableRequest request = new CreateTableRequest();
@@ -97,7 +96,6 @@ public class MoviesDaoImpl implements MoviesDao {
         }
         return createdTable;
     }
-    // get all tables
 
     @Override
     public ListTablesResult getTables() {
@@ -141,7 +139,6 @@ public class MoviesDaoImpl implements MoviesDao {
         return res;
 
     }
-    // delete the table from the database
 
     @Override
     public void deleteTable(String Name) {
@@ -171,10 +168,9 @@ public class MoviesDaoImpl implements MoviesDao {
 
         }
     }
-    // retrieve items from the table
 
     @Override
-    public List<Movies> filterTableWithCategory(String Name, String filter) {
+    public List<Movies> findMovieByCategory(String Name, String filter) {
         Table table = dynamoDB.getTable(Name);
         Map<String, AttributeValue> expressionAttributeValues =
                 new HashMap<String, AttributeValue>();
@@ -204,7 +200,7 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
     @Override
-    public List<Movies> getAllItems(String Name) {
+    public List<Movies> findAll(String Name) {
         ScanRequest scanRequest = new ScanRequest()
                 .withTableName(Name);
         ScanResult result = client.scan(scanRequest);
@@ -220,7 +216,7 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
     @Override
-    public List<Movies> filterTableWithID(String Name, String filter) {
+    public List<Movies> findMovieById(String Name, String filter) {
 
         Map<String, AttributeValue> expressionAttributeValue =
                 new HashMap<String, AttributeValue>();
@@ -249,7 +245,7 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void putItem(String Name, Movies movie) {
+    public void putMovie(String Name, Movies movie) {
         Table table = dynamoDB.getTable(Name);
         try {
 
@@ -270,7 +266,7 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void updateItem(String name, Movies movie) {
+    public void updateMovie(String name, Movies movie) {
 
         /* Create an Object of UpdateItemRequest */
         UpdateItemRequest request = new UpdateItemRequest();
@@ -322,7 +318,7 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void deleteItem(String Name, String ID) {
+    public void deleteMovie(String Name, String ID) {
         /* Create an Object of DeleteItemRequest */
         DeleteItemRequest request = new DeleteItemRequest();
 
