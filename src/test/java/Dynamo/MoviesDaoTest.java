@@ -2,6 +2,8 @@ package Dynamo;
 
 import Dynamo.dao.MoviesDao;
 import Dynamo.model.Movies;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -21,6 +23,7 @@ public class MoviesDaoTest extends DynamoApplicationTests {
 
     static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
             .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
+            .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("test", "test")))
             .build();
 
     static DynamoDB dynamoDB = new DynamoDB(client);
