@@ -28,37 +28,9 @@ public class MoviesDaoTest extends DynamoApplicationTests {
     @Autowired
     private MoviesDao moviesDao;
 
-
     @BeforeEach
-    public void setUp() {
-        // recreate the table before each tests
-        moviesDao.deleteTable("Movies");
-        moviesDao.createTable("Movies");
-
-
-    }
-
-    @Test
-    void createTableTest() {
-        TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
-        assertEquals("ACTIVE", tableDescription.getTableStatus());
-
-    }
-
-    @Test
-    void putItemTest() {
-        TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
-        assertEquals("ACTIVE", tableDescription.getTableStatus());
-
-        assertEquals(4, tableDescription.getItemCount().intValue());
-
-    }
-
-    @Test
-    void filterItemTest() {
-        List<Movies> items = moviesDao.findMovieByCategory("Movies", "Action");
-        System.out.println("hey" + items);
-        assertEquals(3, items.size());
+    public void init(){
+        // insert some data
 
         // insert 2 movies
         Movies movie = new Movies("1", "Forte", "Comédie", "2020", "France");
@@ -72,20 +44,6 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         List<Movies> movies = moviesDao.findAll("Movies");
         assertNotNull(movies);
         assertEquals(2, movies.size());
-    }
-
-    @Test
-    void deleteItemTest() {
-        TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
-
-        assertEquals(4, tableDescription.getItemCount().intValue());
-
-
-    }
-
-    @Test
-    void getallitemsTest() {
-        moviesDao.findAll("Movies");
     }
 
 
