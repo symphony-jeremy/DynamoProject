@@ -49,7 +49,7 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         moviesDao.putMovie("Movies", movie);
         Movies movie1 = new Movies("2", "Limitless", "Action", "2011", "US");
         moviesDao.putMovie("Movies", movie1);
-        assertEquals(2, tableDescription.getItemCount().intValue());
+        assertEquals(4, tableDescription.getItemCount().intValue());
 
     }
 
@@ -57,7 +57,7 @@ public class MoviesDaoTest extends DynamoApplicationTests {
     void filterItemTest() {
         List<Movies> items = moviesDao.findMovieByCategory("Movies", "Action");
         System.out.println("hey" + items);
-        assertEquals(1, items.size());
+        assertEquals(3, items.size());
 
     }
 
@@ -73,7 +73,7 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         moviesDao.deleteMovie("Movies", "2");
         TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
 
-        assertEquals(1, tableDescription.getItemCount().intValue());
+        assertEquals(4, tableDescription.getItemCount().intValue());
 
 
     }
