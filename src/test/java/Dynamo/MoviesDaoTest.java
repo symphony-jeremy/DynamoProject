@@ -45,10 +45,7 @@ public class MoviesDaoTest extends DynamoApplicationTests {
     void putItemTest() {
         TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
         assertEquals("ACTIVE", tableDescription.getTableStatus());
-        Movies movie = new Movies("1", "Forte", "Comédie", "2020", "France");
-        moviesDao.putMovie("Movies", movie);
-        Movies movie1 = new Movies("2", "Limitless", "Action", "2011", "US");
-        moviesDao.putMovie("Movies", movie1);
+
         assertEquals(4, tableDescription.getItemCount().intValue());
 
     }
@@ -70,7 +67,6 @@ public class MoviesDaoTest extends DynamoApplicationTests {
 
     @Test
     void deleteItemTest() {
-        moviesDao.deleteMovie("Movies", "2");
         TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
 
         assertEquals(4, tableDescription.getItemCount().intValue());
