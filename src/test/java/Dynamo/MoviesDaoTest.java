@@ -6,6 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,6 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         // recreate the table before each tests
         moviesDao.deleteTable("Movies");
         moviesDao.createTable("Movies");
-<<<<<<< HEAD
 
 
     }
@@ -60,13 +60,11 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         System.out.println("hey" + items);
         assertEquals(3, items.size());
 
-=======
         // insert 2 movies
         Movies movie = new Movies("1", "Forte", "Comédie", "2020", "France");
         moviesDao.putMovie("Movies", movie);
         Movies movie1 = new Movies("2", "Limitless", "Action", "2011", "US");
         moviesDao.putMovie("Movies", movie1);
->>>>>>> origin/master
     }
 
     @Test
@@ -76,7 +74,6 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         assertEquals(2, movies.size());
     }
 
-<<<<<<< HEAD
     @Test
     void deleteItemTest() {
         TableDescription tableDescription = dynamoDB.getTable("Movies").describe();
@@ -92,6 +89,4 @@ public class MoviesDaoTest extends DynamoApplicationTests {
     }
 
 
-=======
->>>>>>> origin/master
 }
