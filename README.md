@@ -1,6 +1,6 @@
 # DynamoProject
 
-This is my intership project with Symphony
+This is my internship project with Symphony
 
 ## Prerequisites
 
