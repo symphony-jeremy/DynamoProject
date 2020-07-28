@@ -1,15 +1,22 @@
 package Dynamo;
 
+import Dynamo.dao.MoviesDao;
 import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
 import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class DynamoApplicationTests {
 
     private static DynamoDBProxyServer server;
+
+    @Autowired
+    private MoviesDao moviesDao;
 
     @BeforeAll
     public static void setupClass() throws Exception {
@@ -29,5 +36,17 @@ class DynamoApplicationTests {
         server.stop();
         System.out.println("stopping dynamoDB [DONE]");
     }
+
+    @BeforeEach
+    public void before(){
+        moviesDao.createTable("Movies");
+    }
+
+    @AfterEach
+    public void after(){
+        moviesDao.deleteTable("Movies");
+    }
+
+
 
 }
