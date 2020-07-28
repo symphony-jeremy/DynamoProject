@@ -2,6 +2,8 @@ package Dynamo.dao;
 
 import Dynamo.model.Movies;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -20,15 +22,13 @@ public class MoviesDaoImpl implements MoviesDao {
 
     static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
             .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
+            .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("test", "test")))
             .build();
 
     static DynamoDB dynamoDB = new DynamoDB(client);
 
     ListTablesResult res = null;
     Table createdTable;
-    List<Movies> movies = new ArrayList<Movies>();
-    List<Movies> moviesFiltered = new ArrayList<Movies>();
-    List<Movies> moviesFilteredById = new ArrayList<Movies>();
 
 
     @Override
@@ -80,6 +80,8 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
             /* Creating and Sending request using Fluent API - USER Table */
+            // jeremy : commented because table is already created above
+            /*
             Table resultFluent = dynamoDB.createTable((new CreateTableRequest())
                     .withTableName(Name)
                     .withAttributeDefinitions(new AttributeDefinition("ID_Movie", ScalarAttributeType.S), new AttributeDefinition("Title", ScalarAttributeType.S))
@@ -87,6 +89,8 @@ public class MoviesDaoImpl implements MoviesDao {
 
                     .withProvisionedThroughput(new ProvisionedThroughput(1L, 1L)));
             System.out.println("hey" + resultFluent);
+            */
+
 
 
         } catch (AmazonServiceException e) {
@@ -155,12 +159,6 @@ public class MoviesDaoImpl implements MoviesDao {
 
             System.out.println("Table Name : " + result.getTableDescription().getTableName());
 
-            /* Creating and Sending request with Table Name only */
-            result = client.deleteTable(Name);
-
-            System.out.println("Status : " + result.getSdkHttpMetadata().getHttpStatusCode());
-
-            System.out.println("Table Name : " + result.getTableDescription().getTableName());
 
         } catch (AmazonServiceException e) {
 
@@ -183,6 +181,7 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
         ScanResult result = client.scan(items);
+        List<Movies> moviesFiltered = new ArrayList<>();
         for (Map<String, AttributeValue> item : result.getItems()) {
             Movies movie = new Movies();
             movie.setId_Movie(item.get("ID_Movie").getS());
@@ -206,6 +205,7 @@ public class MoviesDaoImpl implements MoviesDao {
         ScanResult result = client.scan(scanRequest);
 
 
+        List<Movies> movies = new ArrayList<>();
         for (Map<String, AttributeValue> item : result.getItems()) {
             Movies movie = new Movies(item.get("ID_Movie").getS(), item.get("Title").getS(), item.get("Category").getS(), item.get("year").getS(), item.get("origin").getS());
             movies.add(movie);
@@ -229,6 +229,7 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
         ScanResult resul = client.scan(items);
+        List<Movies> moviesFilteredById = new ArrayList<>();
         for (Map<String, AttributeValue> item : resul.getItems()) {
             Movies movie = new Movies();
             movie.setId_Movie(item.get("ID_Movie").getS());
