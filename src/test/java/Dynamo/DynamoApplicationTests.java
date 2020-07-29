@@ -44,7 +44,7 @@ class DynamoApplicationTests {
 
     @AfterEach
     public void after(){
-        moviesDao.deleteTable("Movies");
+        moviesDao.deleteTable();
     }
 
 
