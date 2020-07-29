@@ -9,25 +9,25 @@ import com.amazonaws.services.dynamodbv2.model.*;
 
 public interface MoviesDao {
 
-    void deleteMovie(String Name, String ID);
+    void deleteMovie( String ID);
 
-    void updateMovie(String name, Movies movie);
+    void updateMovie( Movies movie);
 
-    void putMovie(String Name, Movies movie);
+    void putMovie( Movies movie);
 
-    List<Movies> findMovieById(String Name, String filter);
+    List<Movies> findMovieById( String filter);
 
-    List<Movies> findAll(String Name);
+    List<Movies> findAll();
 
-    List<Movies> findMovieByCategory(String Name, String filter);
+    List<Movies> findMovieByCategory( String filter);
 
-    void deleteTable(String Name);
+    void deleteTable();
 
     ListTablesResult getTables();
 
     Table createTable(String Name);
 
-    void getTableInformation(String Name);
+    void getTableInformation();
 
 
 }

@@ -29,14 +29,15 @@ public class MoviesDaoImpl implements MoviesDao {
 
     ListTablesResult res = null;
     Table createdTable;
+    String nameTable = "Movies";
+
 
 
     @Override
-    public void getTableInformation(String Name) {
+    public void getTableInformation() {
 
-        System.out.println("Describing " + Name);
 
-        TableDescription tableDescription = dynamoDB.getTable(Name).describe();
+        TableDescription tableDescription = dynamoDB.getTable(nameTable).describe();
         System.out.format(
                 "Name: %s:\n" + "Status: %s \n" + "Provisioned Throughput (read capacity units/sec): %d \n"
                         + "Provisioned Throughput (write capacity units/sec): %d \n",
@@ -47,7 +48,7 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public Table createTable(String Name) {
+    public Table createTable(   String Name) {
 
         /* Create an Object of CreateTableRequest */
         CreateTableRequest request = new CreateTableRequest();
@@ -145,11 +146,11 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void deleteTable(String Name) {
+    public void deleteTable() {
         DeleteTableRequest request = new DeleteTableRequest();
 
         /* Setting Table Name */
-        request.setTableName(Name);
+        request.setTableName(nameTable);
 
         try {
             /* Send Delete Table Request */
@@ -168,13 +169,13 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public List<Movies> findMovieByCategory(String Name, String filter) {
-        Table table = dynamoDB.getTable(Name);
+    public List<Movies> findMovieByCategory( String filter) {
+        Table table = dynamoDB.getTable(nameTable);
         Map<String, AttributeValue> expressionAttributeValues =
                 new HashMap<String, AttributeValue>();
         expressionAttributeValues.put(":category", new AttributeValue(filter));
 
-        ScanRequest items = new ScanRequest().withTableName(Name)
+        ScanRequest items = new ScanRequest().withTableName(nameTable)
                 .withFilterExpression("Category = :category")
                 .withProjectionExpression("ID_Movie, Title , Category ,  origin")
                 .withExpressionAttributeValues(expressionAttributeValues);
@@ -199,9 +200,9 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
     @Override
-    public List<Movies> findAll(String Name) {
+    public List<Movies> findAll() {
         ScanRequest scanRequest = new ScanRequest()
-                .withTableName(Name);
+                .withTableName(nameTable);
         ScanResult result = client.scan(scanRequest);
 
 
@@ -216,13 +217,13 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
     @Override
-    public List<Movies> findMovieById(String Name, String filter) {
+    public List<Movies> findMovieById( String filter) {
 
         Map<String, AttributeValue> expressionAttributeValue =
                 new HashMap<String, AttributeValue>();
         expressionAttributeValue.put(":id", new AttributeValue(filter));
 
-        ScanRequest items = new ScanRequest().withTableName(Name)
+        ScanRequest items = new ScanRequest().withTableName(nameTable)
                 .withFilterExpression("ID_Movie = :id")
                 .withProjectionExpression("ID_Movie, Title , Category ,  origin")
                 .withExpressionAttributeValues(expressionAttributeValue);
@@ -246,8 +247,8 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void putMovie(String Name, Movies movie) {
-        Table table = dynamoDB.getTable(Name);
+    public void putMovie( Movies movie) {
+        Table table = dynamoDB.getTable(nameTable);
         try {
 
             Item item = new Item().withPrimaryKey("ID_Movie", movie.getId_Movie()).withString("Title", movie.getTitle())
@@ -267,13 +268,13 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void updateMovie(String name, Movies movie) {
+    public void updateMovie( Movies movie) {
 
         /* Create an Object of UpdateItemRequest */
         UpdateItemRequest request = new UpdateItemRequest();
 
         /* Setting Table Name */
-        request.setTableName(name);
+        request.setTableName(nameTable);
 
         /* Setting Consumed Capacity */
         request.setReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL);
@@ -319,12 +320,12 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void deleteMovie(String Name, String ID) {
+    public void deleteMovie( String ID) {
         /* Create an Object of DeleteItemRequest */
         DeleteItemRequest request = new DeleteItemRequest();
 
         /* Setting Table Name */
-        request.setTableName(Name);
+        request.setTableName(nameTable);
 
         /* Setting Consumed Capacity */
         request.setReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL);
