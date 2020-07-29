@@ -37,14 +37,14 @@ public class MoviesDaoTest extends DynamoApplicationTests {
 
         // insert 2 movies
         Movies movie = new Movies("1", "Forte", "Comédie", "2020", "France");
-        moviesDao.putMovie("Movies", movie);
+        moviesDao.putMovie( movie);
         Movies movie1 = new Movies("2", "Limitless", "Action", "2011", "US");
-        moviesDao.putMovie("Movies", movie1);
+        moviesDao.putMovie(movie1);
     }
 
     @Test
     void getAllItemsTest() {
-        List<Movies> movies = moviesDao.findAll("Movies");
+        List<Movies> movies = moviesDao.findAll();
         assertNotNull(movies);
         assertEquals(2, movies.size());
     }

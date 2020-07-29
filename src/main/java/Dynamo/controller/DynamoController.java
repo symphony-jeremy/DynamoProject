@@ -22,17 +22,17 @@ public class DynamoController {
         return tab.getTables().getTableNames();
     }
 
-    @PostMapping("/addItem/{Name}")
+    @PostMapping("/addItem")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addMovie(@PathVariable("Name") String name, @RequestBody Movies movie) {
+    public void addMovie( @RequestBody Movies movie) {
 
 
-        tab.putMovie(name, movie);
+        tab.putMovie( movie);
     }
 
-    @GetMapping("/Tables/{name}")
-    public List<Movies> findAll(@PathVariable("name") String name) {
-        return tab.findAll(name);
+    @GetMapping("/Movies")
+    public List<Movies> findAll() {
+        return tab.findAll();
     }
 
     @PostMapping("/Tables/addTable")
@@ -42,38 +42,38 @@ public class DynamoController {
 
     }
 
-    @DeleteMapping("/delete/{name}")
-    public String deleteTable(@PathVariable String name) {
-        tab.deleteTable(name);
+    @DeleteMapping("/delete")
+    public String deleteTable() {
+        tab.deleteTable();
         return " table deleted";
     }
 
-    @GetMapping("/Tables/{name}/{id}")
-    public List<Movies> findMovieById(@PathVariable("name") String name, @PathVariable("id") String ID) {
+    @GetMapping("/Movies/{id}")
+    public List<Movies> findMovieById( @PathVariable("id") String ID) {
 
-        return tab.findMovieById(name, ID);
-
-    }
-
-    @GetMapping("/filter/{name}/{filter}")
-    public List<Movies> findMovieByCategory(@PathVariable("name") String name, @PathVariable("filter") String filter) {
-
-        return tab.findMovieByCategory(name, filter);
+        return tab.findMovieById( ID);
 
     }
 
+    @GetMapping("/filter/Movies/{filter}")
+    public List<Movies> findMovieByCategory( @PathVariable("filter") String filter) {
 
-    @PutMapping("/update/{name}")
-    public void updateMovie(@PathVariable("name") String name, @RequestBody Movies movie) {
+        return tab.findMovieByCategory( filter);
 
-        tab.updateMovie(name, movie);
+    }
+
+
+    @PutMapping("/update/Movies")
+    public void updateMovie( @RequestBody Movies movie) {
+
+        tab.updateMovie( movie);
 
 
     }
 
-    @DeleteMapping("/delete/{name}/{id}")
-    public String deleteMovie(@PathVariable String name, @PathVariable String id) {
-        tab.deleteMovie(name, id);
+    @DeleteMapping("/delete/Movies/{id}")
+    public String deleteMovie( @PathVariable String id) {
+        tab.deleteMovie( id);
         return " item deleted";
     }
 
