@@ -21,12 +21,6 @@ import static org.junit.Assert.assertNotNull;
 
 public class MoviesDaoTest extends DynamoApplicationTests {
 
-    static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
-            .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
-            .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("test", "test")))
-            .build();
-
-    static DynamoDB dynamoDB = new DynamoDB(client);
 
     @Autowired
     private MoviesDao moviesDao;
