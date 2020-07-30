@@ -15,7 +15,7 @@ public interface MoviesDao {
 
     void putMovie( Movies movie);
 
-    List<Movies> findMovieById( String filter);
+    Movies findMovieById( String filter);
 
     List<Movies> findAll();
 

@@ -50,7 +50,7 @@ public class DynamoController {
     }
 
     @GetMapping("/Movies/{id}")
-    public List<Movies> findMovieById( @PathVariable("id") String ID) {
+    public Movies findMovieById( @PathVariable("id") String ID) {
 
         return tab.findMovieById( ID);
 

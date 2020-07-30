@@ -21,7 +21,12 @@ import static org.junit.Assert.assertNotNull;
 
 public class MoviesDaoTest extends DynamoApplicationTests {
 
+    static AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard()
+            .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:8000", "us-west-2"))
+            .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("test", "test")))
+            .build();
 
+    static DynamoDB dynamoDB = new DynamoDB(client);
     @Autowired
     private MoviesDao moviesDao;
 
@@ -34,13 +39,15 @@ public class MoviesDaoTest extends DynamoApplicationTests {
         moviesDao.putMovie( movie);
         Movies movie1 = new Movies("2", "Limitless", "Action", "2011", "US");
         moviesDao.putMovie(movie1);
+
+        moviesDao.deleteMovie("1");
     }
 
     @Test
     void getAllItemsTest() {
         List<Movies> movies = moviesDao.findAll();
         assertNotNull(movies);
-        assertEquals(2, movies.size());
+        assertEquals(1, movies.size());
     }
 
 
