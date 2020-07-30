@@ -15,7 +15,7 @@ public class DynamoController {
     @Autowired
     private MoviesDao tab;
 
-
+    // to get all tables
     @GetMapping("/getAlltables")
     public List<String> getTables() {
 
@@ -35,6 +35,7 @@ public class DynamoController {
         return tab.findAll();
     }
 
+        // create table
     @PostMapping("/Tables/addTable")
     @ResponseStatus(HttpStatus.CREATED)
     public Table createTable(@RequestBody String Name) {
