@@ -217,7 +217,7 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
     @Override
-    public List<Movies> findMovieById( String filter) {
+    public Movies findMovieById( String filter) {
 
         Map<String, AttributeValue> expressionAttributeValue =
                 new HashMap<String, AttributeValue>();
@@ -230,19 +230,18 @@ public class MoviesDaoImpl implements MoviesDao {
 
 
         ScanResult resul = client.scan(items);
-        List<Movies> moviesFilteredById = new ArrayList<>();
+        Movies movie = new Movies();
+
         for (Map<String, AttributeValue> item : resul.getItems()) {
-            Movies movie = new Movies();
             movie.setId_Movie(item.get("ID_Movie").getS());
             movie.setTitle(item.get("Title").getS());
             movie.setCategory(item.get("Category").getS());
             movie.setOrigin(item.get("origin").getS());
 
 
-            moviesFilteredById.add(movie);
             System.out.println(item);
         }
-        return moviesFilteredById;
+        return movie;
 
     }
 
@@ -336,6 +335,8 @@ public class MoviesDaoImpl implements MoviesDao {
         /* Create a Map of Primary Key attributes */
         Map<String, AttributeValue> keysMap = new HashMap<>();
         keysMap.put("ID_Movie", (new AttributeValue(ID)));
+        keysMap.put("Title",(new AttributeValue(findMovieById(ID).getTitle())));
+
 
         request.setKey(keysMap);
 
@@ -344,7 +345,8 @@ public class MoviesDaoImpl implements MoviesDao {
             DeleteItemResult result = client.deleteItem(request);
 
 
-            System.out.println("Consumed Capacity : " + result.getConsumedCapacity().getCapacityUnits());
+            System.out.println("Hello"+ID);
+
 
             /* Printing Old Attributes Name and Values */
             if (result.getAttributes() != null) {
