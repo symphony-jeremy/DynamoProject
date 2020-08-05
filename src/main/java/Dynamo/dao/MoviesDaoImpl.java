@@ -320,28 +320,23 @@ public class MoviesDaoImpl implements MoviesDao {
     }
 
     @Override
-    public void deleteMovie( String ID) {
-        /* Create an Object of DeleteItemRequest */
-        DeleteItemRequest request = new DeleteItemRequest();
+    public void deleteMovie( String id) {
 
-        /* Setting Table Name */
-        request.setTableName(nameTable);
+        HashMap<String, AttributeValue> key = new HashMap<String, AttributeValue>();
+        key.put("ID_Movie", new AttributeValue().withN(id));
 
-        /* Setting Consumed Capacity */
-        request.setReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL);
+        DeleteItemRequest deleteItemRequest = new DeleteItemRequest()
+                .withTableName(nameTable)
+                .withKey(key)
+                .withConditionExpression("ID_Movie = :val")
+                //.withExpressionAttributeValues(expressionAttributeValues)
+                .withReturnValues(ReturnValue.ALL_OLD);
 
-        /* To get old value of item's attributes before it is deleted */
-        request.setReturnValues(ReturnValue.ALL_OLD);
 
-        /* Create a Map of Primary Key attributes */
-        Map<String, AttributeValue> keysMap = new HashMap<>();
-        keysMap.put("ID_Movie", (new AttributeValue(ID)));
-
-        request.setKey(keysMap);
 
         try {
             /* Send Delete Item Request */
-            DeleteItemResult result = client.deleteItem(request);
+            DeleteItemResult result = client.deleteItem(deleteItemRequest);
 
 
             System.out.println("Consumed Capacity : " + result.getConsumedCapacity().getCapacityUnits());
